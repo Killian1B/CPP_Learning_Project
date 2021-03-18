@@ -24,3 +24,13 @@ bool AircraftManager::update()
 
     return true;
 }
+
+void AircraftManager::init()
+{
+    aircraft_factory.init_aircraft_types();
+}
+
+std::unique_ptr<Aircraft> AircraftManager::create_aircraft(Airport* airport) const
+{
+    return aircraft_factory.create_random_aircraft(airport);
+}

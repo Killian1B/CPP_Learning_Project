@@ -37,7 +37,7 @@ void TowerSimulation::create_keystrokes()
 {
     GL::keystrokes.emplace('x', []() { GL::exit_loop(); });
     GL::keystrokes.emplace('q', []() { GL::exit_loop(); });
-    GL::keystrokes.emplace('c', [this]() { aircraft_manager.add(aircraft_factory.create_random_aircraft(airport)); });
+    GL::keystrokes.emplace('c', [this]() { aircraft_manager.add(aircraft_manager.create_aircraft(airport)); });
     GL::keystrokes.emplace('+', []() { GL::change_zoom(0.95f); });
     GL::keystrokes.emplace('-', []() { GL::change_zoom(1.05f); });
     GL::keystrokes.emplace('f', []() { GL::toggle_fullscreen(); });
@@ -76,7 +76,7 @@ void TowerSimulation::launch()
     }
 
     init_airport();
-    aircraft_factory.init_aircraft_types();
+    aircraft_manager.init();
 
     GL::loop();
 }
