@@ -18,4 +18,6 @@ public:
     void init_aircraft_types();
 
     [[nodiscard]] std::unique_ptr<Aircraft> create_random_aircraft(Airport* airport) const;
+
+    std::string get_airline(int);
 };

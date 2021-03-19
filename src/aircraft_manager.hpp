@@ -14,11 +14,13 @@ private:
     AircraftFactory aircraft_factory;
 
 public:
-    void add(std::unique_ptr<Aircraft> aircraft);
+    void add(std::unique_ptr<Aircraft>);
 
     bool update() override;
 
     void init();
 
     [[nodiscard]] std::unique_ptr<Aircraft> create_aircraft(Airport*) const;
+
+    int nb_get_airlines(int);
 };

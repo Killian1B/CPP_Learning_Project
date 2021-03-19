@@ -44,6 +44,14 @@ void TowerSimulation::create_keystrokes()
     GL::keystrokes.emplace('z', []() { GL::ticks_per_sec = std::max(GL::ticks_per_sec - 1u, 1u); });
     GL::keystrokes.emplace('a', []() { GL::ticks_per_sec = std::min(GL::ticks_per_sec + 1u, 180u); });
     GL::keystrokes.emplace('p', []() { GL::is_paused = !GL::is_paused; });
+    GL::keystrokes.emplace('0', [this]() { std::cout << aircraft_manager.nb_get_airlines(0) << std::endl;});
+    GL::keystrokes.emplace('1', [this]() { std::cout << aircraft_manager.nb_get_airlines(1) << std::endl;});
+    GL::keystrokes.emplace('2', [this]() { std::cout << aircraft_manager.nb_get_airlines(2) << std::endl;});
+    GL::keystrokes.emplace('3', [this]() { std::cout << aircraft_manager.nb_get_airlines(3) << std::endl;});
+    GL::keystrokes.emplace('4', [this]() { std::cout << aircraft_manager.nb_get_airlines(4) << std::endl;});
+    GL::keystrokes.emplace('5', [this]() { std::cout << aircraft_manager.nb_get_airlines(5) << std::endl;});
+    GL::keystrokes.emplace('6', [this]() { std::cout << aircraft_manager.nb_get_airlines(6) << std::endl;});
+    GL::keystrokes.emplace('7', [this]() { std::cout << aircraft_manager.nb_get_airlines(7) << std::endl;});
 }
 
 void TowerSimulation::display_help() const
@@ -51,12 +59,7 @@ void TowerSimulation::display_help() const
     std::cout << "This is an airport tower simulator" << std::endl
               << "the following keysstrokes have meaning:" << std::endl;
 
-    for (const auto& ks_pair : GL::keystrokes)
-    {
-        std::cout << ks_pair.first << ' ';
-    }
-
-    std::cout << std::endl;
+    std::for_each(GL::keystrokes.cbegin(), GL::keystrokes.cend(), [](std::pair<char, GL::KeyStroke> keys){std::cout << keys.first << std::endl;});
 }
 
 void TowerSimulation::init_airport()
