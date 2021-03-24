@@ -9,8 +9,14 @@ void AircraftManager::add(std::unique_ptr<Aircraft> aircraft)
 
 bool AircraftManager::update()
 {
-    aircrafts.erase(std::remove_if(aircrafts.begin(), aircrafts.end(), [](std::unique_ptr<Aircraft>& aircraft) { return !aircraft->update(); }),
-            aircrafts.end());
+    std::sort(aircrafts.begin(), aircrafts.end());
+    aircrafts.erase(std::remove_if(aircrafts.begin(), aircrafts.end(), [this](std::unique_ptr<Aircraft>& aircraft) {
+        if(!aircraft->update()) {
+            aircraft_factory.delete_flight_num(aircraft);
+            return true;
+        } 
+        return false;
+    }), aircrafts.end());
 
     return true;
 }
@@ -20,7 +26,7 @@ void AircraftManager::init()
     aircraft_factory.init_aircraft_types();
 }
 
-std::unique_ptr<Aircraft> AircraftManager::create_aircraft(Airport* airport) const
+std::unique_ptr<Aircraft> AircraftManager::create_aircraft(Airport* airport)
 {
     return aircraft_factory.create_random_aircraft(airport);
 }

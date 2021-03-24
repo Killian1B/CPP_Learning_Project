@@ -20,7 +20,7 @@ public:
 
     void init();
 
-    [[nodiscard]] std::unique_ptr<Aircraft> create_aircraft(Airport*) const;
+    [[nodiscard]] std::unique_ptr<Aircraft> create_aircraft(Airport*);
 
     int nb_get_airlines(int);
 };

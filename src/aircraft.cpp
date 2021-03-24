@@ -96,7 +96,22 @@ bool Aircraft::update()
         {
             return false;
         }
+    }
 
+    if(is_circling())
+    {
+        auto way = control.reserve_terminal(*this);
+        if(!way.empty())
+        {
+            for(auto w : way)
+            {
+                add_waypoint(w, false);
+            }
+        }
+    }
+        
+    if (waypoints.empty())
+    {
         waypoints = control.get_instructions(*this);
     }
 
@@ -130,6 +145,12 @@ bool Aircraft::update()
         }
         else
         {
+            if(--fuel == 0)
+            {
+                std::cout << "The plane " << flight_number << " has crashed because the state steals us our money with gasoline taxes !" << std::endl;
+                control.free_terminal(*this);
+                return false;
+            }
             // if we are in the air, but too slow, then we will sink!
             const float speed_len = speed.length();
             if (speed_len < SPEED_THRESHOLD)
@@ -141,11 +162,21 @@ bool Aircraft::update()
         // update the z-value of the displayable structure
         GL::Displayable::z = pos.x() + pos.y();
     }
-
+    
     return true;
 }
 
 void Aircraft::display() const
 {
     type.texture.draw(project_2D(pos), { PLANE_TEXTURE_DIM, PLANE_TEXTURE_DIM }, get_speed_octant());
+}
+
+bool Aircraft::is_circling() const
+{
+    return !has_terminal() && !is_service_done && !is_at_terminal;
+}
+
+bool Aircraft::has_terminal() const
+{
+    return !waypoints.empty() && waypoints.back().type == wp_terminal;
 }

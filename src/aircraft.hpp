@@ -9,6 +9,7 @@
 
 #include <string>
 #include <string_view>
+#include <ctime>
 
 class Aircraft : public GL::Displayable, public GL::DynamicObject
 {
@@ -20,6 +21,7 @@ private:
     Tower& control;
     bool landing_gear_deployed = false; // is the landing gear deployed?
     bool is_at_terminal        = false;
+    int fuel;
 
     // TASK-0 C-3
     // L'endroit le plus approprié pour retirer l'avion, c'est lorsque :
@@ -49,16 +51,29 @@ private:
 
     Aircraft(const Aircraft&) = delete;
     Aircraft& operator=(const Aircraft&) = delete;
+    bool operator<(Aircraft& other)
+    {
+        if(has_terminal() && !other.has_terminal())
+        {
+            return true;
+        }
+        if(!has_terminal() && other.has_terminal())
+        {
+            return false;
+        }
+        return fuel < other.fuel;
+    }
 
 public:
     Aircraft(const AircraftType& type_, const std::string_view& flight_number_, const Point3D& pos_,
-             const Point3D& speed_, Tower& control_) :
+             const Point3D& speed_, Tower& control_, int& fuel_) :
         GL::Displayable { pos_.x() + pos_.y() },
         type { type_ },
         flight_number { flight_number_ },
         pos { pos_ },
         speed { speed_ },
-        control { control_ }
+        control { control_ },
+        fuel { fuel_ }
     {
         speed.cap_length(max_speed());
     }
@@ -68,6 +83,8 @@ public:
 
     void display() const override;
     bool update() override;
+    bool is_circling() const;
+    bool has_terminal() const;
 
     friend class Tower;
 };
