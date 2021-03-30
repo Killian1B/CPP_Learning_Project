@@ -117,14 +117,14 @@ Indiquez dans la console quel avion a été réapprovisionné ainsi que la quant
 5. Définissez maintenant une fonction `refill_aircraft_if_needed` dans la classe `Terminal`, prenant un paramètre `fuel_stock` par référence non-constante.
 Elle devra appeler la fonction `refill` sur l'avion actuellement au terminal, si celui-ci a vraiment besoin d'essence.  
 
-6. Modifiez la fonction `Aircraft::update`, afin de mettre-en-oeuvre les étapes suivantes.\
+6. Modifiez la fonction `Airport::update`, afin de mettre-en-oeuvre les étapes suivantes.\
 \- Si `next_refill_time` vaut 0 :\
-    \* `fuel_stock` est incrémenté de la valeur de `ordered_full`.\
+    \* `fuel_stock` est incrémenté de la valeur de `ordered_fuel`.\
     \* `ordered_fuel` est recalculé en utilisant le minimum entre `AircraftManager::get_required_fuel()` et `5'000` (il s'agit du volume du camion citerne qui livre le kérosène).\
     \* `next_refill_time` est réinitialisé à `100`.\
     \* La quantité d'essence reçue, la quantité d'essence en stock et la nouvelle quantité d'essence commandée sont affichées dans la console.\
 \- Sinon `next_refill_time` est décrémenté.\
-\- Les avions de chacun des terminaux sont réapprovionnés s'ils doivent l'être.
+\- Chaque terminal réapprovisionne son avion s'il doit l'être.
 
 ### E - Paramétrage (optionnel)
 
