@@ -6,6 +6,7 @@
 #include "geometry.hpp"
 #include "tower.hpp"
 #include "waypoint.hpp"
+#include "cassert"
 
 #include <string>
 #include <string_view>
@@ -14,6 +15,8 @@
 class Aircraft : public GL::Displayable, public GL::DynamicObject
 {
 private:
+    const int min_fuel = 300;
+    const int max_fuel = 3000;
     const AircraftType& type;
     const std::string flight_number;
     Point3D pos, speed; // note: the speed should always be normalized to length 'speed'
@@ -22,6 +25,7 @@ private:
     bool landing_gear_deployed = false; // is the landing gear deployed?
     bool is_at_terminal        = false;
     int fuel;
+    constexpr static auto front = false;
 
     // TASK-0 C-3
     // L'endroit le plus approprié pour retirer l'avion, c'est lorsque :
@@ -45,7 +49,7 @@ private:
     void arrive_at_terminal();
     // deploy and retract landing gear depending on next waypoints
     void operate_landing_gear();
-    void add_waypoint(const Waypoint& wp, const bool front);
+    void add_waypoint(const Waypoint& wp);
     bool is_on_ground() const { return pos.z() < DISTANCE_THRESHOLD; }
     float max_speed() const { return is_on_ground() ? type.max_ground_speed : type.max_air_speed; }
 
@@ -66,15 +70,17 @@ private:
 
 public:
     Aircraft(const AircraftType& type_, const std::string_view& flight_number_, const Point3D& pos_,
-             const Point3D& speed_, Tower& control_, int& fuel_) :
+             const Point3D& speed_, Tower& control_) :
         GL::Displayable { pos_.x() + pos_.y() },
         type { type_ },
         flight_number { flight_number_ },
         pos { pos_ },
         speed { speed_ },
         control { control_ },
-        fuel { fuel_ }
+        fuel { rand()%(max_fuel-min_fuel+1) + min_fuel }
     {
+        assert(fuel >= 300);
+        assert(fuel <= 3000);
         speed.cap_length(max_speed());
     }
 
@@ -85,6 +91,9 @@ public:
     bool update() override;
     bool is_circling() const;
     bool has_terminal() const;
+    bool is_low_on_fuel() const;
+    void refill(int& fuel_stock);
 
     friend class Tower;
+    friend class AircraftManager;
 };

@@ -37,7 +37,7 @@ void TowerSimulation::create_keystrokes()
 {
     GL::keystrokes.emplace('x', []() { GL::exit_loop(); });
     GL::keystrokes.emplace('q', []() { GL::exit_loop(); });
-    GL::keystrokes.emplace('c', [this]() { aircraft_manager.add(aircraft_manager.create_aircraft(airport)); });
+    GL::keystrokes.emplace('c', [this]() { aircraft_manager.add(aircraft_manager.create_aircraft(airport->get_tower())); });
     GL::keystrokes.emplace('+', []() { GL::change_zoom(0.95f); });
     GL::keystrokes.emplace('-', []() { GL::change_zoom(1.05f); });
     GL::keystrokes.emplace('f', []() { GL::toggle_fullscreen(); });
@@ -52,6 +52,7 @@ void TowerSimulation::create_keystrokes()
     GL::keystrokes.emplace('5', [this]() { std::cout << aircraft_manager.nb_get_airlines(5) << std::endl;});
     GL::keystrokes.emplace('6', [this]() { std::cout << aircraft_manager.nb_get_airlines(6) << std::endl;});
     GL::keystrokes.emplace('7', [this]() { std::cout << aircraft_manager.nb_get_airlines(7) << std::endl;});
+    GL::keystrokes.emplace('m', [this]() { std::cout << aircraft_manager.get_number_crash() << " crash !" << std::endl; });
 }
 
 void TowerSimulation::display_help() const
@@ -65,8 +66,8 @@ void TowerSimulation::display_help() const
 void TowerSimulation::init_airport()
 {
     airport = new Airport { one_lane_airport, Point3D { 0, 0, 0 },
-                            new img::Image { one_lane_airport_sprite_path.get_full_path() } };
-
+                            new img::Image { one_lane_airport_sprite_path.get_full_path() }, aircraft_manager };
+    assert(airport != nullptr);
     GL::move_queue.emplace(airport);
 }
 

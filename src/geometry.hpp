@@ -8,128 +8,118 @@
 #include <array>
 #include <numeric>
 
-struct Point2D
+template <typename Element, typename... ElementType>
+class Point
 {
-    float values[2] {};
+public:
+    //Point() = default;
+    Point(ElementType&&... args) : values { args... } { }
+    Point(const ElementType&&... args) : values { args... } { }
+    Point(const ElementType&... args) : values { args... } { }
+    //Point(ElementType x, ElementType y, ElementType z) : values { x, y, z } { static_assert(Size == 3); }
 
-    Point2D() {}
-    Point2D(float x, float y) : values { x, y } {}
-
-    float& x() { return values[0]; }
-    float x() const { return values[0]; }
-
-    float& y() { return values[1]; }
-    float y() const { return values[1]; }
-
-    Point2D& operator+=(const Point2D& other)
+    const Element& operator[](int index) const
     {
-        x() += other.x();
-        y() += other.y();
+        assert(index < sizeof...(ElementType));
+        return values[index];
+    }
+
+    Element& operator[](int index)
+    {
+        assert(index < sizeof...(ElementType));
+        return values[index];
+    }
+
+    Element& x() { return values[0]; }
+    Element x() const { return values[0]; }
+
+    Element& y() { static_assert(sizeof...(ElementType) >= 2); return values[1]; }
+    Element y() const { static_assert(sizeof...(ElementType) >= 2); return values[1]; }
+
+    Element& z() { static_assert(sizeof...(ElementType) >= 3); return values[2]; }
+    Element z() const { static_assert(sizeof...(ElementType) >= 3); return values[2]; }
+
+    Point<Element, ElementType...>& operator+=(const Point<Element, ElementType...>& other)
+    {
+        for(size_t i = 0; i < sizeof...(ElementType); i++)
+        {
+            values[i] += other.values[i];
+        }
+        /*int nb = 0;
+        std::transform(values.begin(), values.end(), values.begin(), [&nb, other](ElementType& val){ return val + other.values[nb++];});*/
         return *this;
     }
 
-    Point2D& operator*=(const Point2D& other)
+    Point<Element, ElementType...>& operator-=(const Point<Element, ElementType...>& other)
     {
-        x() *= other.x();
-        y() *= other.y();
+        for(size_t i = 0; i < sizeof...(ElementType); i++)
+        {
+            values[i] -= other.values[i];
+        }
+        /*int nb = 0;
+        std::transform(values.begin(), values.end(), values.begin(), [&nb, other](ElementType& val){ return val - other.values[nb++];});*/
         return *this;
     }
 
-    Point2D& operator*=(const float scalar)
+    Point<Element, ElementType...>& operator*=(const Point<Element, ElementType...>& other)
     {
-        x() *= scalar;
-        y() *= scalar;
+        for(size_t i = 0; i < sizeof...(ElementType); i++)
+        {
+            values[i] *= other.values[i];
+        }
+        /*int nb = 0;
+        std::transform(values.begin(), values.end(), values.begin(), [&nb, other](ElementType& val){ return val * other.values[nb++];});*/
         return *this;
     }
 
-    Point2D operator+(const Point2D& other) const
+    Point<Element, ElementType...>& operator*=(const Element scalar)
     {
-        Point2D result = *this;
+        for(size_t i = 0; i < sizeof...(ElementType); i++)
+        {
+            values[i] *= scalar;
+        }
+        //std::transform(values.begin(), values.end(), values.begin(), [scalar](ElementType& val){return val*scalar;});
+        return *this;
+    }
+
+    Point<Element, ElementType...> operator+(const Point<Element, ElementType...>& other) const
+    {
+        Point<Element, ElementType...> result = *this;
         result += other;
         return result;
     }
 
-    Point2D operator*(const Point2D& other) const
+    Point<Element, ElementType...> operator-(const Point<Element, ElementType...>& other) const
     {
-        Point2D result = *this;
-        result *= other;
-        return result;
-    }
-
-    Point2D operator*(const float scalar) const
-    {
-        Point2D result = *this;
-        result *= scalar;
-        return result;
-    }
-};
-
-struct Point3D
-{
-    std::array<float, 3> values {};
-
-    Point3D() {}
-    Point3D(float x, float y, float z) : values { x, y, z } {}
-
-    float& x() { return values[0]; }
-    float x() const { return values[0]; }
-
-    float& y() { return values[1]; }
-    float y() const { return values[1]; }
-
-    float& z() { return values[2]; }
-    float z() const { return values[2]; }
-
-    Point3D& operator+=(const Point3D& other)
-    {
-        int nb = 0;
-        std::transform(values.begin(), values.end(), values.begin(), [&nb, other](float& val){ return val + other.values.at(nb++);});
-        return *this;
-    }
-
-    Point3D& operator-=(const Point3D& other)
-    {
-        int nb = 0;
-        std::transform(values.begin(), values.end(), values.begin(), [&nb, other](float& val){ return val - other.values.at(nb++);});
-        return *this;
-    }
-
-    Point3D& operator*=(const float scalar)
-    {
-        std::transform(values.begin(), values.end(), values.begin(), [scalar](float& val){return val*scalar;});
-        return *this;
-    }
-
-    Point3D operator+(const Point3D& other) const
-    {
-        Point3D result = *this;
-        result += other;
-        return result;
-    }
-
-    Point3D operator-(const Point3D& other) const
-    {
-        Point3D result = *this;
+        Point<Element, ElementType...> result = *this;
         result -= other;
         return result;
     }
 
-    Point3D operator*(const float scalar) const
+    Point<Element, ElementType...> operator*(const Point<Element, ElementType...>& other) const
     {
-        Point3D result = *this;
+        Point<Element, ElementType...> result = *this;
+        result *= other;
+        return result;
+    }
+
+    Point<Element, ElementType...> operator*(const Element scalar) const
+    {
+        Point<Element, ElementType...> result = *this;
         result *= scalar;
         return result;
     }
 
-    Point3D operator-() const { return Point3D { -x(), -y(), -z() }; }
+    Element length() const 
+    { 
+        return std::sqrt(x() * x() + y() * y() + z() * z());
+    }
 
-    float length() const { return std::reduce(values.begin(), values.end(), 0., [](float v1, float v2) { return std::sqrt(v1*v1 + v2*v2);}); }
+    Element distance_to(const Point<Element, ElementType...>& other) const { return (*this - other).length(); }
 
-    float distance_to(const Point3D& other) const { return (*this - other).length(); }
-
-    Point3D& normalize(const float target_len = 1.0f)
+    Point<Element, ElementType...>& normalize(const Element target_len = 1)
     {
-        const float current_len = length();
+        const Element current_len = length();
         if (current_len == 0)
         {
             throw std::logic_error("cannot normalize vector of length 0");
@@ -139,11 +129,11 @@ struct Point3D
         return *this;
     }
 
-    Point3D& cap_length(const float max_len)
+    Point<Element, ElementType...>& cap_length(const Element max_len)
     {
         assert(max_len > 0);
 
-        const float current_len = length();
+        const Element current_len = length();
         if (current_len > max_len)
         {
             *this *= (max_len / current_len);
@@ -151,11 +141,16 @@ struct Point3D
 
         return *this;
     }
+
+    Point<Element, ElementType...> operator-() const { return Point<Element, ElementType...> { -x(), -y(), -z() }; }
+
+    Element values[sizeof...(ElementType)];
+    //std::array<Element, sizeof...(ElementType)> values;
 };
 
-// our 3D-coordinate system will be tied to the airport: the runway is parallel to the x-axis, the z-axis
-// points towards the sky, and y is perpendicular to both thus,
-// {1,0,0} --> {.5,.5}   {0,1,0} --> {-.5,.5}   {0,0,1} --> {0,1}
+using Point2D = Point<float, float, float>;
+using Point3D = Point<float, float, float, float>;
+
 inline Point2D project_2D(const Point3D& p)
 {
     return { .5f * p.x() - .5f * p.y(), .5f * p.x() + .5f * p.y() + p.z() };

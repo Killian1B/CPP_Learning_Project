@@ -76,9 +76,9 @@ void Aircraft::operate_landing_gear()
     }
 }
 
-void Aircraft::add_waypoint(const Waypoint& wp, const bool front)
+void Aircraft::add_waypoint(const Waypoint& wp)
 {
-    if (front)
+    if constexpr (front)
     {
         waypoints.push_front(wp);
     }
@@ -105,14 +105,17 @@ bool Aircraft::update()
         {
             for(auto w : way)
             {
-                add_waypoint(w, false);
+                add_waypoint(w);
             }
         }
     }
         
     if (waypoints.empty())
     {
-        waypoints = control.get_instructions(*this);
+        for (const auto& wp: control.get_instructions(*this))
+        {
+            add_waypoint(wp);
+        }
     }
 
     if (!is_at_terminal)
@@ -147,9 +150,7 @@ bool Aircraft::update()
         {
             if(--fuel == 0)
             {
-                std::cout << "The plane " << flight_number << " has crashed because the state steals us our money with gasoline taxes !" << std::endl;
-                control.free_terminal(*this);
-                return false;
+                throw AircraftCrash { flight_number + " crashed into the ground because the state steals us our money with gasoline taxes !" };
             }
             // if we are in the air, but too slow, then we will sink!
             const float speed_len = speed.length();
@@ -179,4 +180,26 @@ bool Aircraft::is_circling() const
 bool Aircraft::has_terminal() const
 {
     return !waypoints.empty() && waypoints.back().type == wp_terminal;
+}
+
+bool Aircraft::is_low_on_fuel() const
+{
+    return fuel < 200;
+}
+
+void Aircraft::refill(int& fuel_stock)
+{
+    int fuel_recharge = max_fuel-fuel;
+    if(fuel_recharge <= fuel_stock)
+    {
+        fuel += fuel_recharge;
+        fuel_stock -= fuel_recharge;
+    }
+    else
+    {
+        fuel += fuel_stock;
+        fuel_recharge = fuel_stock;
+        fuel_stock = 0;
+    }
+    std::cout << get_flight_num() << " refill of " << fuel_recharge << " fuel." << std::endl;
 }
