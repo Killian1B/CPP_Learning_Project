@@ -5,6 +5,7 @@
 #include "img/media_path.hpp"
 
 #include <array>
+#include <cassert>
 
 struct AircraftType
 {
@@ -22,6 +23,6 @@ struct AircraftType
     {
         assert(max_ground_speed >= 0.f && "max_ground_speed must be positive.");
         assert(max_air_speed >= 0.f && "max_air_speed must be positive.");
-        assert(max_accel >= 0.f, && "max_accel must be positive");
+        assert(max_accel >= 0.f && "max_accel must be positive");
     }
 };
