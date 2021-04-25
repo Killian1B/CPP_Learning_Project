@@ -67,7 +67,7 @@ void TowerSimulation::init_airport()
 {
     airport = new Airport { one_lane_airport, Point3D { 0, 0, 0 },
                             new img::Image { one_lane_airport_sprite_path.get_full_path() }, aircraft_manager };
-    assert(airport != nullptr) && "airport cannot be null";
+    assert(airport != nullptr && "airport cannot be null");
     GL::move_queue.emplace(airport);
 }
 
