@@ -20,8 +20,8 @@ struct AircraftType
         max_accel { max_accel_ },
         texture { new img::Image { sprite.get_full_path() }, num_tiles }
     {
-        assert(max_ground_speed >= 0.f);
-        assert(max_air_speed >= 0.f);
-        assert(max_accel >= 0.f);
+        assert(max_ground_speed >= 0.f && "max_ground_speed must be positive.");
+        assert(max_air_speed >= 0.f && "max_air_speed must be positive.");
+        assert(max_accel >= 0.f, && "max_accel must be positive");
     }
 };

@@ -79,8 +79,8 @@ public:
         control { control_ },
         fuel { rand()%(max_fuel-min_fuel+1) + min_fuel }
     {
-        assert(fuel >= 300);
-        assert(fuel <= 3000);
+        assert(fuel >= min_fuel && "fuel must be >= " << min_fuel);
+        assert(fuel <= max_fuel && "fuel must be <= " << max_fuel);
         speed.cap_length(max_speed());
     }
 

@@ -12,11 +12,9 @@ template <typename Element, typename... ElementType>
 class Point
 {
 public:
-    //Point() = default;
     Point(ElementType&&... args) : values { args... } { }
     Point(const ElementType&&... args) : values { args... } { }
     Point(const ElementType&... args) : values { args... } { }
-    //Point(ElementType x, ElementType y, ElementType z) : values { x, y, z } { static_assert(Size == 3); }
 
     const Element& operator[](int index) const
     {

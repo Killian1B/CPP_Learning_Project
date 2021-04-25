@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <set>
 
 #include "aircraft_types.hpp"
 #include "tower.hpp"
@@ -12,7 +12,7 @@ private:
     const static size_t NUM_AIRCRAFT_TYPES = 3;
     const std::string airlines[8] = { "AF", "LH", "EY", "DL", "KL", "BA", "AY", "EY" };
     AircraftType* aircraft_types[NUM_AIRCRAFT_TYPES] {};
-    std::vector<std::string> flight_num;
+    std::set<std::string> flight_num;
 
     [[nodiscard]] std::unique_ptr<Aircraft> create_aircraft(const AircraftType& type, Tower& tower);
 

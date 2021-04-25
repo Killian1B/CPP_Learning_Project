@@ -46,7 +46,6 @@ WaypointQueue Tower::get_instructions(Aircraft& aircraft)
         Terminal& terminal      = airport.get_terminal(terminal_num);
         if (!terminal.is_servicing())
         {
-            std::cout << "Quitte terminal" << std::endl;
             aircraft.is_service_done = true;
             terminal.finish_service();
             reserved_terminals.erase(it);

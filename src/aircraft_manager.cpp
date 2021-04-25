@@ -19,7 +19,7 @@ bool AircraftManager::update()
             }
             return false;
         }
-        catch(const std::exception& e)
+        catch(const AircraftCrash& e)
         {
             std::cerr << e.what() << '\n';
             number_crash++;
